@@ -1,21 +1,25 @@
-from rest_framework import viewsets
-from .models import Movie, Watchlist, Rating
-from .serializers import MovieSerializer, WatchlistSerializer, RatingSerializer
+from rest_framework import viewsets, generics
+from .models import Movie, Watchlist, Rating, Video
+from .serializers import MovieSerializer, WatchlistSerializer, RatingSerializer, VideoSerializer, RegisterSerializer, MyTokenObtainPairSerializer
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
-# accounts/views.py
-from rest_framework import generics
-from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import RegisterSerializer, MyTokenObtainPairSerializer
-from .models import MyModel
+from .forms import VideoForm
+from rest_framework_simplejwt.views import TokenObtainPairView  # Import TokenObtainPairView
 
-def upload_image(request):
+def upload_video(request):
     if request.method == 'POST':
-        image = request.FILES.get('image')
-        my_model_instance = MyModel(image=image)
-        my_model_instance.save()
-    return render(request, 'upload_image.html')
+        form = VideoForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('video_list')  # Redirect to a view that lists videos
+    else:
+        form = VideoForm()
+    return render(request, 'api/upload.html', {'form': form})  # Ensure the correct path
+
+class VideoListView(generics.ListAPIView):
+    queryset = Video.objects.all()
+    serializer_class = VideoSerializer
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
