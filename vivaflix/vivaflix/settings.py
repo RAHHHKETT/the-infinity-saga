@@ -45,6 +45,8 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 # Application definition
 
+
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -53,8 +55,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'api',
-     'rest_framework',
-     'rest_framework_simplejwt.token_blacklist'
+    'rest_framework',
+     'rest_framework_simplejwt.token_blacklist',
+    'cloudinary_storage',
+    
 ]
 
 MIDDLEWARE = [
@@ -72,7 +76,7 @@ ROOT_URLCONF = 'vivaflix.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'api' / 'templates'],  # Add this line to include the templates directory
         'APP_DIRS': True,  # This should be True to find app templates
         'OPTIONS': {
             'context_processors': [
@@ -150,4 +154,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+
+
+
 }
