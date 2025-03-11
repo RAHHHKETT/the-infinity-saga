@@ -1,4 +1,5 @@
-from rest_framework import viewsets, generics
+from rest_framework import viewsets, generics, status
+from rest_framework.response import Response
 from .models import Movie, Watchlist, Rating, Video
 from .serializers import MovieSerializer, WatchlistSerializer, RatingSerializer, VideoSerializer, RegisterSerializer, MyTokenObtainPairSerializer
 from django.contrib.auth import login, authenticate
@@ -6,6 +7,10 @@ from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 from .forms import VideoForm
 from rest_framework_simplejwt.views import TokenObtainPairView  # Import TokenObtainPairView
+from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
+from rest_framework_simplejwt.tokens import RefreshToken
+
 
 def upload_video(request):
     if request.method == 'POST':
@@ -23,6 +28,16 @@ class VideoListView(generics.ListAPIView):
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response({
+                "user": RegisterSerializer(user, context=self.get_serializer_context()).data,
+                "message": "User created successfully.",
+            }, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
@@ -59,3 +74,21 @@ def login_view(request):
             login(request, user)
             return redirect('home')  # Redirect to a home page or dashboard
     return render(request, 'login.html')
+
+class LoginView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            refresh = RefreshToken.for_user(user)
+            login(request, user)
+            return Response({
+                "message": "Login successful",
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
+                }, 
+                status=status.HTTP_200_OK)
+        return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)

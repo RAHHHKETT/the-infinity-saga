@@ -17,10 +17,20 @@ class UserSerializer(serializers.ModelSerializer):
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
-        token = super().get_token(user)
-        token['username'] = user.username
-        token['email'] = user.email
-        return token
+        serializer = LoginSerializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        login(request, user)
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            "uyer":{
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
+            },
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }, status=status.HTTP_200_OK) 
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])

@@ -15,6 +15,7 @@ from decouple import config
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
+from datetime import timedelta
 
 LOGIN_URL = '/api/accounts/login/'
 
@@ -54,14 +55,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'api',
     'rest_framework',
-     'rest_framework_simplejwt.token_blacklist',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'cloudinary_storage',
     
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -99,12 +104,8 @@ from decouple import config
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DATABASE_NAME'),        # Correctly accessing the database name
-        'USER': config('DATABASE_USER'),        # Use the variable name for the user
-        'PASSWORD': config('DATABASE_PASSWORD'), # Use the variable name for the password
-        'HOST': 'localhost',
-        'PORT': '5432',                         # Default port for PostgreSQL
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -158,3 +159,10 @@ REST_FRAMEWORK = {
 
 
 }
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
+}
+
+CORS_ALLOW_ALL_ORIGINS = True
