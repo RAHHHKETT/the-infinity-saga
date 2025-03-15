@@ -1,7 +1,7 @@
 from rest_framework import viewsets, generics, status
 from rest_framework.response import Response
-from .models import Movie, Watchlist, Rating, Video
-from .serializers import MovieSerializer, WatchlistSerializer, RatingSerializer, VideoSerializer, RegisterSerializer, MyTokenObtainPairSerializer
+from .models import Movie, Watchlist, Rating, Video, Collection
+from .serializers import MovieSerializer, WatchlistSerializer, RatingSerializer, VideoSerializer, RegisterSerializer, MyTokenObtainPairSerializer, CollectionSerializer
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
@@ -54,6 +54,10 @@ class RatingViewSet(viewsets.ModelViewSet):
     queryset = Rating.objects.all()
     serializer_class = RatingSerializer
 
+class CollectionViewSet(viewsets.ModelViewSet):
+    queryset = Collection.objects.all()
+    serializer_class = CollectionSerializer
+
 def signup(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -77,6 +81,7 @@ def login_view(request):
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
+    serializer_class = MyTokenObtainPairSerializer
 
     def post(self, request, *args, **kwargs):
         username = request.data.get('username')
@@ -92,3 +97,4 @@ class LoginView(APIView):
                 }, 
                 status=status.HTTP_200_OK)
         return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
+

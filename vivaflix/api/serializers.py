@@ -1,13 +1,22 @@
 from rest_framework import serializers
-from .models import Movie, Watchlist, Rating, Video
+from .models import Movie, Watchlist, Rating, Video, Collection
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth import authenticate
 
 class VideoSerializer(serializers.ModelSerializer):
+    imageUrl = serializers.CharField(source='image_link')
+
     class Meta:
         model = Video
-        fields = ['id', 'title', 'image_link', 'description']
+        fields = '__all__'
+
+    def get_imageUrl(self, obj):
+        request = self.context.get('request')
+        if obj.image_link:
+            return request.build_absolute_uri(obj.image_link)
+        return None
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -35,7 +44,11 @@ class LoginSerializer(serializers.Serializer):
 
         if not user:
             raise serializers.ValidationError('Invalid username or password')
-        attrs['user'] = user
+
+        refresh = MyTokenObtainPairSerializer.get_token(user)
+        attrs['refresh'] = str(refresh)
+        attrs['access'] = str(refresh.access_token)
+
 
         return attrs
 
@@ -72,4 +85,9 @@ class WatchlistSerializer(serializers.ModelSerializer):
 class RatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rating
+        fields = '__all__'
+
+class CollectionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Collection
         fields = '__all__'
