@@ -6,17 +6,10 @@ from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import authenticate
 
 class VideoSerializer(serializers.ModelSerializer):
-    imageUrl = serializers.CharField(source='image_link')
 
     class Meta:
         model = Video
         fields = '__all__'
-
-    def get_imageUrl(self, obj):
-        request = self.context.get('request')
-        if obj.image_link:
-            return request.build_absolute_uri(obj.image_link)
-        return None
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -73,9 +66,18 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 class MovieSerializer(serializers.ModelSerializer):
+    imageUrl = serializers.CharField(source='image_url')
+
     class Meta:
         model = Movie
         fields = '__all__'
+
+    def get_imageUrl(self, obj):
+        request = self.context.get('request')
+        if obj.image_url.startswith('/'):
+            return request.build_absolute_uri(obj.image_url)
+        return None
+
 
 class WatchlistSerializer(serializers.ModelSerializer):
     class Meta:

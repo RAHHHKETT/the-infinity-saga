@@ -46,6 +46,11 @@ class MovieViewSet(viewsets.ModelViewSet):
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request  # Add request to context
+        return context
+
 class WatchlistViewSet(viewsets.ModelViewSet):
     queryset = Watchlist.objects.all()
     serializer_class = WatchlistSerializer
@@ -62,13 +67,16 @@ def signup(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            form.save()
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
             login(request, user)
             return redirect('home')  # Redirect to a home page or dashboard
     else:
         form = UserCreationForm()
     return render(request, 'signup.html', {'form': form})
-
+            
 def login_view(request):
     if request.method == 'POST':
         username = request.POST['username']
