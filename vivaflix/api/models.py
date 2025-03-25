@@ -36,6 +36,7 @@ class Movie(models.Model):
     
     title = models.CharField(max_length=255)
     image_url = models.URLField(max_length=500, blank=True, null=True)
+    video_url = models.URLField(max_length=500, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     release_year = models.IntegerField(blank=True, null=True)
     duration = models.CharField(max_length=50, blank=True, null=True)
@@ -71,14 +72,8 @@ class Watchlist(models.Model):
 
     def __str__(self):
         return f"{self.user.username}'s Watchlist"
-
-class Rating(models.Model):
-    movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    stars = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
-
-    class Meta:
-        unique_together = (('user', 'movie'),)
-
-    def __str__(self):
-        return f"{self.user.username} rated {self.movie.title} - {self.stars} stars"
+    
+class MainPage(models.Model):
+    movies = models.ManyToManyField(Movie)
+    collection = models.ManyToManyField(Collection)
+    

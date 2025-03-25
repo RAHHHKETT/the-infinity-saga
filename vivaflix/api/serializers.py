@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Movie, Watchlist, Rating, Video, Collection
+from .models import Movie, Watchlist, Video, Collection, MainPage
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth.password_validation import validate_password
@@ -84,12 +84,12 @@ class WatchlistSerializer(serializers.ModelSerializer):
         model = Watchlist
         fields = '__all__'
 
-class RatingSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Rating
-        fields = '__all__'
-
 class CollectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Collection
+        fields = '__all__'
+
+class MainPageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MainPage
         fields = '__all__'

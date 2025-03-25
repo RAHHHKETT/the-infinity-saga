@@ -1,7 +1,9 @@
-from rest_framework import viewsets, generics, status
+from rest_framework import viewsets, generics, status, permissions
 from rest_framework.response import Response
-from .models import Movie, Watchlist, Rating, Video, Collection
-from .serializers import MovieSerializer, WatchlistSerializer, RatingSerializer, VideoSerializer, RegisterSerializer, MyTokenObtainPairSerializer, CollectionSerializer
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
+from .models import Movie, Watchlist, Video, Collection, MainPage
+from .serializers import MovieSerializer, WatchlistSerializer, VideoSerializer, RegisterSerializer, MyTokenObtainPairSerializer, CollectionSerializer, MainPageSerializer
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
@@ -56,9 +58,29 @@ class WatchlistViewSet(viewsets.ModelViewSet):
     queryset = Watchlist.objects.all()
     serializer_class = WatchlistSerializer
 
-class RatingViewSet(viewsets.ModelViewSet):
-    queryset = Rating.objects.all()
-    serializer_class = RatingSerializer
+    @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
+    def add_movie(self, request):
+        movie_id = request.data.get('movie_id')
+        try:
+            movie = Movie.objects.get(id=movie_id)
+            watchlist, created = Watchlist.objects.get_or_create(user=request.user)
+            watchlist.movies.add(movie)
+            return Response({'status': 'Movie added to watchlist'})
+        except Movie.DoesNotExist:
+            return Response({'error': 'Movie not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
+    def remove_movie(self, request):
+        movie_id = request.data.get('movie_id')
+        try:
+            movie = Movie.objects.get(id=movie_id)
+            watchlist, created = Watchlist.objects.get_or_create(user=request.user)  # Ensures watchlist exists
+            if movie in watchlist.movies.all():
+                watchlist.movies.remove(movie)
+                return Response({'status': 'Movie removed from watchlist'})
+            return Response({'error': 'Movie not in watchlist'}, status=status.HTTP_400_BAD_REQUEST)
+        except Movie.DoesNotExist:
+            return Response({'error': 'Movie not found'}, status=status.HTTP_404_NOT_FOUND)
 
 class CollectionViewSet(viewsets.ModelViewSet):
     queryset = Collection.objects.all()
@@ -111,3 +133,7 @@ class MovieDetailView(RetrieveAPIView):
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
     lookup_field = 'id'
+
+class MainPageView(APIView):
+    queryset = MainPage.objects.all()
+    serializer_class = MainPageSerializer

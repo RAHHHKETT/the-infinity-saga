@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import MovieViewSet, WatchlistViewSet, RatingViewSet, signup, LoginView, upload_video, VideoListView, RegisterView, MyTokenObtainPairView, CollectionViewSet, MovieDetailView
+from .views import MovieViewSet, WatchlistViewSet, signup, LoginView, upload_video, VideoListView, RegisterView, MyTokenObtainPairView, CollectionViewSet, MovieDetailView, MainPageView
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -9,7 +9,6 @@ from rest_framework_simplejwt.views import (
 router = DefaultRouter()
 router.register(r'movies', MovieViewSet)
 router.register(r'watchlist', WatchlistViewSet)
-router.register(r'ratings', RatingViewSet)
 router.register(r'collections', CollectionViewSet)
 
 urlpatterns = [
@@ -22,4 +21,5 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('videos/', VideoListView.as_view(), name='video_list'),
     path('movies/<int:id>/', MovieDetailView.as_view(), name='movie-detail'),
+    path('mainpage/', MainPageView.as_view(), name='mainpage'),
 ]
