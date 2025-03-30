@@ -41,7 +41,7 @@ SECRET_KEY = 'django-insecure-)*dvshea_#5s(76+%*@67s%_$hi5@p)&1n&b-(9o##ulz%9iq0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'the-infinity-saga.vercel.app']
 
 
 # Application definition
@@ -161,7 +161,7 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 }
 
 CORS_ALLOW_ALL_ORIGINS = True

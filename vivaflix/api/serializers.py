@@ -67,6 +67,8 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 class MovieSerializer(serializers.ModelSerializer):
     imageUrl = serializers.CharField(source='image_url')
+    releaseYear = serializers.IntegerField(source='release_year')
+    videoUrl = serializers.CharField(source='video_url')
 
     class Meta:
         model = Movie
