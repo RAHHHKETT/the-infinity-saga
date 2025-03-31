@@ -20,6 +20,8 @@ import os
 
 LOGIN_URL = '/api/accounts/login/'
 
+ALLOWED_HOSTS = ['*']
+
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'dg8zpaybw',
     'API_KEY': '281943938813234',
@@ -50,13 +52,13 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'the-infinity-saga.vercel.app']
 
 
 INSTALLED_APPS = [
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'corsheaders',
     'api',
     'rest_framework',
     'rest_framework_simplejwt',
