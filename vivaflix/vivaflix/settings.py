@@ -20,7 +20,7 @@ import os
 
 LOGIN_URL = '/api/accounts/login/'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*', '54.206.57.116']
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'dg8zpaybw',
